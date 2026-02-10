@@ -118,9 +118,18 @@ seed-apply:
 			cp seed/nvim/init.vim "$(NVIM_DIR)/" && \
 			echo "[OK]   nvim/init.vim -> $(NVIM_DIR)/"; \
 		fi; \
+		if [ -f seed/nvim/plugins.vim ]; then \
+			cp seed/nvim/plugins.vim "$(NVIM_DIR)/" && \
+			echo "[OK]   nvim/plugins.vim -> $(NVIM_DIR)/"; \
+		fi; \
 		if [ -f seed/nvim/coc-settings.json ]; then \
 			cp seed/nvim/coc-settings.json "$(NVIM_DIR)/" && \
 			echo "[OK]   nvim/coc-settings.json -> $(NVIM_DIR)/"; \
+		fi; \
+		if [ -d seed/nvim/conf ]; then \
+			mkdir -p "$(NVIM_DIR)/conf" && \
+			cp seed/nvim/conf/*.vim "$(NVIM_DIR)/conf/" && \
+			echo "[OK]   nvim/conf/ -> $(NVIM_DIR)/conf/"; \
 		fi; \
 	fi
 	@# zsh: 既存 .zshrc にマーカー付きで追記（既存ブロックがあれば差し替え）
