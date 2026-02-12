@@ -50,7 +50,7 @@ local function open_lazygit()
   vim.cmd('startinsert')
 end
 
-vim.keymap.set('n', '<leader>lg', open_lazygit, { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>lk', open_lazygit, { noremap = true, silent = true })
 EOF
 
 
