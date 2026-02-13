@@ -13,7 +13,7 @@ BACKUP_DIR := backup/$(TIMESTAMP)
 VIMABLE_BEGIN := \# === vimable BEGIN ===
 VIMABLE_END   := \# === vimable END ===
 
-.PHONY: backup list apply initialize seed-apply
+.PHONY: backup list apply initialize seed-apply add-plug
 
 backup:
 	@echo "=== vimable backup ==="
@@ -140,6 +140,46 @@ seed-apply:
 		fi; \
 		{ echo ""; echo '$(VIMABLE_BEGIN)'; cat seed/zsh/.zshrc; echo '$(VIMABLE_END)'; } >> "$(ZSHRC)" && \
 		echo "[OK]   zsh   -> $(ZSHRC) (追記)"; \
+	fi
+	@echo ""
+	@echo "=== done ==="
+
+# === 拡張ツールのインストール ===
+# 使い方: make add-plug PLUG=cz-git
+add-plug:
+	@if [ -z "$(PLUG)" ]; then \
+		echo "Usage: make add-plug PLUG=<name>"; \
+		echo ""; \
+		echo "Available plugins:"; \
+		echo "  cz-git    commitizen adapter for conventional commits"; \
+		exit 1; \
+	fi
+	@$(MAKE) _plug-$(PLUG)
+
+_plug-cz-git:
+	@echo "=== add-plug: cz-git ==="
+	@echo ""
+	@if ! command -v npm >/dev/null 2>&1; then \
+		echo "[ERROR] npm not found. Run 'brew install node' first."; \
+		exit 1; \
+	fi
+	@if command -v cz >/dev/null 2>&1; then \
+		echo "[SKIP] cz-git already installed"; \
+	else \
+		echo "[INSTALL] cz-git + commitizen"; \
+		npm install -g cz-git commitizen; \
+	fi
+	@if [ -f "$(HOME)/.czrc" ]; then \
+		echo "[SKIP] ~/.czrc already exists"; \
+	else \
+		cp seed/plug/cz-git/.czrc "$(HOME)/.czrc" && \
+		echo "[OK]   ~/.czrc"; \
+	fi
+	@if [ -f "$(HOME)/commitlint.config.js" ]; then \
+		echo "[SKIP] ~/commitlint.config.js already exists"; \
+	else \
+		cp seed/plug/cz-git/commitlint.config.js "$(HOME)/commitlint.config.js" && \
+		echo "[OK]   ~/commitlint.config.js"; \
 	fi
 	@echo ""
 	@echo "=== done ==="
