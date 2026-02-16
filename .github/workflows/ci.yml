@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, implement-cicd]
+    branches: [main, implement-cicd, add-plug-czgit]
   pull_request:
     branches: [main]
 
@@ -30,3 +30,15 @@ jobs:
 
       - name: Idempotency test
         run: make initialize
+
+      - name: Install cz-git plugin
+        run: make add-plug PLUG=cz-git
+
+      - name: Verify cz-git installation
+        run: |
+          command -v cz
+          test -f ~/.czrc
+          test -f ~/commitlint.config.js
+
+      - name: Idempotency test (cz-git)
+        run: make add-plug PLUG=cz-git
