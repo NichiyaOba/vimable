@@ -1,4 +1,12 @@
 # vimable - dotfiles backup manager
+# OS検出（sed互換性のため）
+UNAME := $(shell uname -s)
+ifeq ($(UNAME),Darwin)
+  SED_INPLACE := sed -i ''
+else
+  SED_INPLACE := sed -i
+endif
+
 # バックアップ対象の設定
 TMUX_CONF := $(HOME)/.tmux.conf
 # ディレクトリ全体をコピー（init.vim, init.lua, lua/, after/, plugin/ 等すべて含む）
@@ -135,7 +143,7 @@ seed-apply:
 	@# zsh: 既存 .zshrc にマーカー付きで追記（既存ブロックがあれば差し替え）
 	@if [ -f seed/zsh/.zshrc ]; then \
 		if [ -f "$(ZSHRC)" ] && grep -q '$(VIMABLE_BEGIN)' "$(ZSHRC)"; then \
-			sed -i '' '/$(VIMABLE_BEGIN)/,/$(VIMABLE_END)/d' "$(ZSHRC)" && \
+			$(SED_INPLACE) '/$(VIMABLE_BEGIN)/,/$(VIMABLE_END)/d' "$(ZSHRC)" && \
 			echo "[UPDATE] zsh  -- 既存 vimable ブロックを差し替え"; \
 		fi; \
 		{ echo ""; echo '$(VIMABLE_BEGIN)'; cat seed/zsh/.zshrc; echo '$(VIMABLE_END)'; } >> "$(ZSHRC)" && \
@@ -187,7 +195,7 @@ initialize:
 	@# Step 6: プラグインインストール
 	@echo "--- Step 6: Plugin installation ---"
 	@echo "[vim-plug] Installing plugins..."
-	@nvim --headless +PlugInstall +qall 2>/dev/null || echo "[WARN] vim-plug install had issues (may need manual :PlugInstall)"
+	@nvim --headless +PlugInstall +qall
 	@echo ""
 	@echo "[native pack] Installing tpope plugins..."
 	@mkdir -p "$(HOME)/.local/share/nvim/site/pack/tpope/start"
@@ -206,7 +214,7 @@ initialize:
 		tmux start-server \; set-environment -g TMUX_PLUGIN_MANAGER_PATH "$(HOME)/.tmux/plugins/" && \
 		$(HOME)/.tmux/plugins/tpm/bin/install_plugins; \
 	else \
-		echo "[WARN] TPM install_plugins script not found"; \
+		echo "[ERROR] TPM install_plugins script not found"; exit 1; \
 	fi
 	@echo ""
 	@echo "=== vimable initialize complete ==="

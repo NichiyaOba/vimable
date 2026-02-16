@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main, implement-cicd]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Initialize
+        run: make initialize
+
+      - name: Smoke test
+        run: |
+          nvim --headless -c "quit"
+          tmux new-session -d -s test
+          tmux kill-session -t test
+
+      - name: Idempotency test
+        run: make initialize
