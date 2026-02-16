@@ -1,6 +1,14 @@
 " ==================================================
 " Coc / LSP
 " ==================================================
+" 自動インストールするcoc拡張機能
+let g:coc_global_extensions = [
+      \ 'coc-tsserver',
+      \ 'coc-prettier',
+      \ 'coc-go',
+      \ 'coc-json',
+      \ ]
+
 function! s:coc_jump_vsplit(action) abort
   " 元ウィンドウを記録
   let l:origin_win = win_getid()
@@ -23,12 +31,8 @@ endfunction
 nnoremap <silent> gd :call <SID>coc_jump_vsplit('jumpDefinition')<CR>
 nnoremap <silent> gy :call <SID>coc_jump_vsplit('jumpTypeDefinition')<CR>
 nnoremap <silent> gi :call <SID>coc_jump_vsplit('jumpImplementation')<CR>
-nnoremap <silent> gr :call <SID>coc_jump_vsplit('jumpReferences')<CR>
-
-
-nnoremap <silent> <leader>gd :CocFzfList definitions<CR>
-nnoremap <silent> <leader>gr :CocFzfList references<CR>
-nnoremap <silent> <leader>gi :CocFzfList implementations<CR>
+" references は複数候補があるためcoc-listを使用
+nmap <silent> gr <Plug>(coc-references)
 
 
 inoremap <expr> <CR> pumvisible() ? coc#_select_confirm() : "\<CR>"
