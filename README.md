@@ -24,6 +24,29 @@ dotfiles (nvim, tmux, zsh) のバックアップ・復元・自動セットア�
 | `make apply` | 最新のバックアップを復元（`BACKUP=<名前>` で指定可） |
 | `make seed-apply` | seed/ のデフォルト設定を配置 |
 | `make initialize` | 新しいマシンへの全自動セットアップ |
+| `make add-plug PLUG=<name>` | 拡張ツールをインストール |
+
+## 拡張ツール（add-plug）
+
+`make add-plug` は `seed/plug/` に定義された拡張ツールをインストールするコマンド。
+
+```bash
+# 拡張ツールをインストール
+make add-plug PLUG=cz-git
+
+# 引数なしで利用可能な拡張一覧を表示
+make add-plug
+```
+
+- 各拡張は `seed/plug/<name>/` にテンプレート設定を持つ
+- 既にインストール済みの場合はスキップ（冪等）
+- 前提ツールが不足している場合はエラーメッセージで案内
+
+## 拡張機能一覧
+
+| 名前 | 説明 | 詳細 |
+| --- | --- | --- |
+| cz-git | Conventional Commits 対話プロンプト（commitizen アダプター） | [README](seed/plug/cz-git/) |
 
 ## initialize の流れ
 
