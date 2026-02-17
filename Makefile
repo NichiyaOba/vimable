@@ -12,6 +12,8 @@ TMUX_CONF := $(HOME)/.tmux.conf
 # ディレクトリ全体をコピー（init.vim, init.lua, lua/, after/, plugin/ 等すべて含む）
 NVIM_DIR  := $(HOME)/.config/nvim
 ZSHRC     := $(HOME)/.zshrc
+CZRC            := $(HOME)/.czrc
+COMMITLINT_CONF := $(HOME)/commitlint.config.js
 
 # タイムスタンプとバックアップ先
 TIMESTAMP  := $(shell date +%Y-%m-%d_%H-%M-%S)
@@ -50,6 +52,21 @@ backup:
 		echo "[OK]   zsh   <- $(ZSHRC)"; \
 	else \
 		echo "[SKIP] zsh   -- $(ZSHRC) not found"; \
+	fi
+	@# cz-git
+	@if [ -f "$(CZRC)" ]; then \
+		mkdir -p $(BACKUP_DIR)/cz-git; \
+		cp "$(CZRC)" $(BACKUP_DIR)/cz-git/.czrc; \
+		echo "[OK]   cz-git <- $(CZRC)"; \
+	else \
+		echo "[SKIP] cz-git -- $(CZRC) not found"; \
+	fi
+	@if [ -f "$(COMMITLINT_CONF)" ]; then \
+		mkdir -p $(BACKUP_DIR)/cz-git; \
+		cp "$(COMMITLINT_CONF)" $(BACKUP_DIR)/cz-git/commitlint.config.js; \
+		echo "[OK]   cz-git <- $(COMMITLINT_CONF)"; \
+	else \
+		echo "[SKIP] cz-git -- $(COMMITLINT_CONF) not found"; \
 	fi
 	@echo ""
 	@echo "=== done ==="
@@ -91,6 +108,19 @@ apply:
 		echo "[OK]   zsh   -> $(ZSHRC)"; \
 	else \
 		echo "[SKIP] zsh   -- not in backup"; \
+	fi
+	@# cz-git
+	@if [ -f "backup/$(BACKUP)/cz-git/.czrc" ]; then \
+		cp "backup/$(BACKUP)/cz-git/.czrc" "$(CZRC)" && \
+		echo "[OK]   cz-git -> $(CZRC)"; \
+	else \
+		echo "[SKIP] cz-git -- no .czrc in backup"; \
+	fi
+	@if [ -f "backup/$(BACKUP)/cz-git/commitlint.config.js" ]; then \
+		cp "backup/$(BACKUP)/cz-git/commitlint.config.js" "$(COMMITLINT_CONF)" && \
+		echo "[OK]   cz-git -> $(COMMITLINT_CONF)"; \
+	else \
+		echo "[SKIP] cz-git -- no commitlint.config.js in backup"; \
 	fi
 	@echo ""
 	@echo "=== done ==="
@@ -177,18 +207,10 @@ _plug-cz-git:
 		echo "[INSTALL] cz-git + commitizen"; \
 		npm install -g cz-git commitizen; \
 	fi
-	@if [ -f "$(HOME)/.czrc" ]; then \
-		echo "[SKIP] ~/.czrc already exists"; \
-	else \
-		cp seed/plug/cz-git/.czrc "$(HOME)/.czrc" && \
-		echo "[OK]   ~/.czrc"; \
-	fi
-	@if [ -f "$(HOME)/commitlint.config.js" ]; then \
-		echo "[SKIP] ~/commitlint.config.js already exists"; \
-	else \
-		cp seed/plug/cz-git/commitlint.config.js "$(HOME)/commitlint.config.js" && \
-		echo "[OK]   ~/commitlint.config.js"; \
-	fi
+	@cp seed/plug/cz-git/.czrc "$(HOME)/.czrc" && \
+		echo "[OK]   ~/.czrc"
+	@cp seed/plug/cz-git/commitlint.config.js "$(HOME)/commitlint.config.js" && \
+		echo "[OK]   ~/commitlint.config.js"
 	@echo ""
 	@echo "=== done ==="
 
