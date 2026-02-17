@@ -12,6 +12,8 @@ TMUX_CONF := $(HOME)/.tmux.conf
 # ディレクトリ全体をコピー（init.vim, init.lua, lua/, after/, plugin/ 等すべて含む）
 NVIM_DIR  := $(HOME)/.config/nvim
 ZSHRC     := $(HOME)/.zshrc
+CZRC            := $(HOME)/.czrc
+COMMITLINT_CONF := $(HOME)/commitlint.config.js
 
 # タイムスタンプとバックアップ先
 TIMESTAMP  := $(shell date +%Y-%m-%d_%H-%M-%S)
@@ -21,7 +23,7 @@ BACKUP_DIR := backup/$(TIMESTAMP)
 VIMABLE_BEGIN := \# === vimable BEGIN ===
 VIMABLE_END   := \# === vimable END ===
 
-.PHONY: backup list apply initialize seed-apply
+.PHONY: backup list apply initialize seed-apply add-plug
 
 backup:
 	@echo "=== vimable backup ==="
@@ -50,6 +52,21 @@ backup:
 		echo "[OK]   zsh   <- $(ZSHRC)"; \
 	else \
 		echo "[SKIP] zsh   -- $(ZSHRC) not found"; \
+	fi
+	@# cz-git
+	@if [ -f "$(CZRC)" ]; then \
+		mkdir -p $(BACKUP_DIR)/cz-git; \
+		cp "$(CZRC)" $(BACKUP_DIR)/cz-git/.czrc; \
+		echo "[OK]   cz-git <- $(CZRC)"; \
+	else \
+		echo "[SKIP] cz-git -- $(CZRC) not found"; \
+	fi
+	@if [ -f "$(COMMITLINT_CONF)" ]; then \
+		mkdir -p $(BACKUP_DIR)/cz-git; \
+		cp "$(COMMITLINT_CONF)" $(BACKUP_DIR)/cz-git/commitlint.config.js; \
+		echo "[OK]   cz-git <- $(COMMITLINT_CONF)"; \
+	else \
+		echo "[SKIP] cz-git -- $(COMMITLINT_CONF) not found"; \
 	fi
 	@echo ""
 	@echo "=== done ==="
@@ -91,6 +108,19 @@ apply:
 		echo "[OK]   zsh   -> $(ZSHRC)"; \
 	else \
 		echo "[SKIP] zsh   -- not in backup"; \
+	fi
+	@# cz-git
+	@if [ -f "backup/$(BACKUP)/cz-git/.czrc" ]; then \
+		cp "backup/$(BACKUP)/cz-git/.czrc" "$(CZRC)" && \
+		echo "[OK]   cz-git -> $(CZRC)"; \
+	else \
+		echo "[SKIP] cz-git -- no .czrc in backup"; \
+	fi
+	@if [ -f "backup/$(BACKUP)/cz-git/commitlint.config.js" ]; then \
+		cp "backup/$(BACKUP)/cz-git/commitlint.config.js" "$(COMMITLINT_CONF)" && \
+		echo "[OK]   cz-git -> $(COMMITLINT_CONF)"; \
+	else \
+		echo "[SKIP] cz-git -- no commitlint.config.js in backup"; \
 	fi
 	@echo ""
 	@echo "=== done ==="
@@ -149,6 +179,38 @@ seed-apply:
 		{ echo ""; echo '$(VIMABLE_BEGIN)'; cat seed/zsh/.zshrc; echo '$(VIMABLE_END)'; } >> "$(ZSHRC)" && \
 		echo "[OK]   zsh   -> $(ZSHRC) (追記)"; \
 	fi
+	@echo ""
+	@echo "=== done ==="
+
+# === 拡張ツールのインストール ===
+# 使い方: make add-plug PLUG=cz-git
+add-plug:
+	@if [ -z "$(PLUG)" ]; then \
+		echo "Usage: make add-plug PLUG=<name>"; \
+		echo ""; \
+		echo "Available plugins:"; \
+		echo "  cz-git    commitizen adapter for conventional commits"; \
+		exit 1; \
+	fi
+	@$(MAKE) _plug-$(PLUG)
+
+_plug-cz-git:
+	@echo "=== add-plug: cz-git ==="
+	@echo ""
+	@if ! command -v npm >/dev/null 2>&1; then \
+		echo "[ERROR] npm not found. Run 'brew install node' first."; \
+		exit 1; \
+	fi
+	@if command -v cz >/dev/null 2>&1; then \
+		echo "[SKIP] cz-git already installed"; \
+	else \
+		echo "[INSTALL] cz-git + commitizen"; \
+		npm install -g cz-git commitizen; \
+	fi
+	@cp seed/plug/cz-git/.czrc "$(HOME)/.czrc" && \
+		echo "[OK]   ~/.czrc"
+	@cp seed/plug/cz-git/commitlint.config.js "$(HOME)/commitlint.config.js" && \
+		echo "[OK]   ~/commitlint.config.js"
 	@echo ""
 	@echo "=== done ==="
 
