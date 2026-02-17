@@ -3,6 +3,18 @@
 dotfiles (nvim, tmux, zsh) のバックアップ・復元・自動セットアップツール。
 すべての操作は Make コマンドで実行する。
 
+## 前提条件
+
+`make initialize` を実行する前に、以下を手動でインストールしておく必要がある。
+
+| ツール | 必要な理由 | インストール方法 |
+| --- | --- | --- |
+| Node.js (npm) | coc.nvim の動作に必須。cz-git プラグインにも必要 | `brew install node` |
+| Go | coc-go (gopls) が使用する Go Language Server に必要 | `brew install go` |
+| terraform-ls | coc-settings.json で Terraform LSP として設定 | `brew install hashicorp/tap/terraform-ls` |
+
+> **Note:** Go と terraform-ls はそれぞれの言語を使わない場合は不要。Node.js は coc.nvim が依存するため必須。
+
 ## Make コマンド一覧
 
 | コマンド | 説明 |
