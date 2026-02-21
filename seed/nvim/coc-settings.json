@@ -18,7 +18,7 @@
   "prettier.enable": true,
   "prettier.requireConfig": false, // .prettierrc がなくても動く
   "prettier.semi": true,
-  "prettier.singleQuote": true,
+  "prettier.singleQuote": false,
   "suggest.noselect": false,
   "suggest.autoTrigger": "always",
   "typescript.suggest.autoImports": true,
