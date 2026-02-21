@@ -35,5 +35,5 @@ Plug 'github/copilot.vim'
 Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-rails'
 Plug 'hashivim/vim-terraform'
-
+Plug 'NichiyaOba/rubvim'
 call plug#end()
