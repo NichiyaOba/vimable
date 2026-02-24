@@ -47,6 +47,7 @@ make add-plug
 | 名前 | 説明 | 詳細 |
 | --- | --- | --- |
 | cz-git | Conventional Commits 対話プロンプト（commitizen アダプター） | [README](seed/plug/cz-git/) |
+| claude-map | Claude Code プロセスの実行状態を tmux ステータスバーに表示 | [README](seed/plug/claude-map/) |
 
 ## initialize の流れ
 
@@ -66,6 +67,8 @@ seed/
   nvim/coc-settings.json # CoC LSP 設定
   tmux/.tmux.conf        # tmux 設定
   zsh/.zshrc             # zsh 設定（マーカー付き追記）
+  plug/cz-git/           # cz-git 拡張テンプレート
+  plug/claude-map/       # claude-map 拡張テンプレート
 backup/                  # タイムスタンプ付きバックアップ（gitignore）
 ```
 

@@ -189,7 +189,8 @@ add-plug:
 		echo "Usage: make add-plug PLUG=<name>"; \
 		echo ""; \
 		echo "Available plugins:"; \
-		echo "  cz-git    commitizen adapter for conventional commits"; \
+		echo "  cz-git      commitizen adapter for conventional commits"; \
+		echo "  claude-map   Claude Code process monitor on tmux status bar"; \
 		exit 1; \
 	fi
 	@$(MAKE) _plug-$(PLUG)
@@ -211,6 +212,47 @@ _plug-cz-git:
 		echo "[OK]   ~/.czrc"
 	@cp seed/plug/cz-git/commitlint.config.js "$(HOME)/commitlint.config.js" && \
 		echo "[OK]   ~/commitlint.config.js"
+	@echo ""
+	@echo "=== done ==="
+
+_plug-claude-map:
+	@echo "=== add-plug: claude-map ==="
+	@echo ""
+	@if ! command -v tmux >/dev/null 2>&1; then \
+		echo "[ERROR] tmux not found. Run 'brew install tmux' first."; \
+		exit 1; \
+	fi
+	@if [ ! -d "$(HOME)/.tmux/plugins/tpm" ]; then \
+		echo "[ERROR] TPM not found. Run 'make initialize' first."; \
+		exit 1; \
+	fi
+	@if [ ! -f "$(TMUX_CONF)" ]; then \
+		echo "[ERROR] $(TMUX_CONF) not found. Run 'make seed-apply' first."; \
+		exit 1; \
+	fi
+	@if grep -q "NichiyaOba/claude-map" "$(TMUX_CONF)"; then \
+		echo "[SKIP] claude-map already configured in $(TMUX_CONF)"; \
+	else \
+		echo "[CONFIG] Adding claude-map to $(TMUX_CONF)"; \
+		PLUGIN_LINE="set -g @plugin 'NichiyaOba/claude-map'"; \
+		COMMENT="# Claude Code プロセスの実行状態をステータスバーに表示"; \
+		TMPFILE="$(TMUX_CONF).tmp"; \
+		awk -v comment="$$COMMENT" -v plugin="$$PLUGIN_LINE" \
+			'/^run .*tpm\/tpm/{print comment; print plugin; print ""}1' \
+			"$(TMUX_CONF)" > "$$TMPFILE" && \
+		mv "$$TMPFILE" "$(TMUX_CONF)" && \
+		echo "[OK]   claude-map plugin declaration added"; \
+	fi
+	@echo "[INSTALL] Installing claude-map via TPM..."
+	@tmux start-server \; set-environment -g TMUX_PLUGIN_MANAGER_PATH "$(HOME)/.tmux/plugins/" && \
+		$(HOME)/.tmux/plugins/tpm/bin/install_plugins && \
+		echo "[OK]   claude-map installed via TPM"
+	@if [ -n "$$TMUX" ]; then \
+		tmux source-file "$(TMUX_CONF)" && \
+		echo "[OK]   tmux config reloaded"; \
+	else \
+		echo "[INFO] Run 'tmux source ~/.tmux.conf' to reload in tmux session."; \
+	fi
 	@echo ""
 	@echo "=== done ==="
 
