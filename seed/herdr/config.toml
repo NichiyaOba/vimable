@@ -1,0 +1,19 @@
+onboarding = false
+
+[ui]
+agent_panel_sort = "spaces"
+
+[keys]
+prefix = "ctrl+f"
+
+# 横分割を - に、縦分割を ¥ に割り当て（日本語キーボード対応）
+split_horizontal = "prefix+-"
+split_vertical = "prefix+¥"
+
+# --- workspace 操作 ---
+new_workspace = "prefix+shift+c"
+next_workspace = "prefix+shift+n"
+previous_workspace = "prefix+shift+p"
+
+# 既定の rename_pane は prefix+shift+p を使うため previous_workspace と衝突する。退避先
+rename_pane = "prefix+shift+e"

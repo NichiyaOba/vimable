@@ -1,6 +1,6 @@
 # vimable
 
-dotfiles (nvim, tmux, zsh) のバックアップ・復元・自動セットアップツール。
+dotfiles (nvim, tmux, zsh, herdr) のバックアップ・復元・自動セットアップツール。
 すべての操作は Make コマンドで実行する。
 
 ## 前提条件
@@ -19,7 +19,7 @@ dotfiles (nvim, tmux, zsh) のバックアップ・復元・自動セットア�
 
 | コマンド | 説明 |
 | --- | --- |
-| `make backup` | 現在の nvim/tmux/zsh 設定をタイムスタンプ付きでバックアップ |
+| `make backup` | 現在の nvim/tmux/zsh/herdr 設定をタイムスタンプ付きでバックアップ |
 | `make list` | バックアップ一覧を表示 |
 | `make apply` | 最新のバックアップを復元（`BACKUP=<名前>` で指定可） |
 | `make seed-apply` | seed/ のデフォルト設定を配置 |
@@ -49,6 +49,25 @@ make add-plug
 | cz-git | Conventional Commits 対話プロンプト（commitizen アダプター） | [README](seed/plug/cz-git/) |
 | claude-map | Claude Code プロセスの実行状態を tmux ステータスバーに表示 | [README](seed/plug/claude-map/) |
 
+## herdr のキーバインド
+
+`seed/herdr/config.toml` で設定する。prefix は tmux と同じ `ctrl+f`。
+
+| キー | 動作 |
+| --- | --- |
+| `ctrl+f` | prefix モードに入る |
+| prefix → `Shift+c` | workspace を新規作成 |
+| prefix → `Shift+n` | 次の workspace へ切り替え |
+| prefix → `Shift+p` | 前の workspace へ切り替え |
+| prefix → `Shift+e` | ペイン名を変更 |
+| prefix → `-` | 横分割 |
+| prefix → `¥` | 縦分割 |
+
+- herdr のキーは `prefix+<キー>` の1段のみ。`prefix+w` を押してからさらに別キーを送る2段シーケンスは非対応
+- `Shift+n` / `Shift+p` は既定では `new_workspace` / `rename_pane` に割り当たっているため、`new_workspace` を `Shift+c`、`rename_pane` を `Shift+e` へ退避している
+- `make seed-apply` / `make apply` は設定配置後、herdr サーバが稼働していれば `herdr server reload-config` で即時反映する
+- herdr と tmux は prefix が同じ `ctrl+f` なので、herdr のペイン内で tmux をネストすると内側の tmux に prefix が届かない。両方を入れ子で使う場合はどちらかの prefix を変更する
+
 ## initialize の流れ
 
 1. Homebrew インストール
@@ -66,6 +85,7 @@ seed/
   nvim/init.vim          # Neovim 設定
   nvim/coc-settings.json # CoC LSP 設定
   tmux/.tmux.conf        # tmux 設定
+  herdr/config.toml      # herdr 設定（prefix・workspace キーバインド）
   zsh/.zshrc             # zsh 設定（マーカー付き追記）
   plug/cz-git/           # cz-git 拡張テンプレート
   plug/claude-map/       # claude-map 拡張テンプレート
@@ -89,3 +109,4 @@ backup/                  # タイムスタンプ付きバックアップ（gitig
 | fzf | ファジーファインダー（fzf.vim プラグインが使用） |
 | ripgrep | 高速 grep（fzf.vim のバックエンド） |
 | lazygit | Git TUI クライアント（lazygit.nvim から呼び出し） |
+| herdr | AI エージェント向けターミナル workspace マネージャ。`seed/herdr/config.toml` で設定 |
