@@ -1,0 +1,3 @@
+# カーソル下のファイルパスをクリップボードにコピー (macOS)
+bind status C !echo -n %(file) | pbcopy
+bind diff   C !echo -n %(file) | pbcopy
