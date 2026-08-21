@@ -123,7 +123,16 @@ apply:
 	@if [ -f "backup/$(BACKUP)/herdr/config.toml" ]; then \
 		mkdir -p "$(HERDR_DIR)" && \
 		cp backup/$(BACKUP)/herdr/config.toml $(HERDR_CONF) && \
-		echo "[OK]   herdr -> $(HERDR_CONF)"; \
+		echo "[OK]   herdr -> $(HERDR_CONF)" && \
+		if command -v herdr >/dev/null 2>&1 && [ -S "$(HERDR_DIR)/herdr.sock" ]; then \
+			if herdr server reload-config >/dev/null 2>&1; then \
+				echo "[OK]   herdr config reloaded"; \
+			else \
+				echo "[INFO] herdr -- reload failed, config applies on next start"; \
+			fi; \
+		else \
+			echo "[INFO] herdr -- server not running, config applies on next start"; \
+		fi; \
 	else \
 		echo "[SKIP] herdr -- not in backup"; \
 	fi
@@ -176,7 +185,16 @@ seed-apply:
 	@if [ -f seed/herdr/config.toml ]; then \
 		mkdir -p "$(HERDR_DIR)" && \
 		cp seed/herdr/config.toml "$(HERDR_CONF)" && \
-		echo "[OK]   herdr -> $(HERDR_CONF)"; \
+		echo "[OK]   herdr -> $(HERDR_CONF)" && \
+		if command -v herdr >/dev/null 2>&1 && [ -S "$(HERDR_DIR)/herdr.sock" ]; then \
+			if herdr server reload-config >/dev/null 2>&1; then \
+				echo "[OK]   herdr config reloaded"; \
+			else \
+				echo "[INFO] herdr -- reload failed, config applies on next start"; \
+			fi; \
+		else \
+			echo "[INFO] herdr -- server not running, config applies on next start"; \
+		fi; \
 	else \
 		echo "[SKIP] herdr -- seed/herdr/config.toml not found"; \
 	fi
