@@ -1,0 +1,11 @@
+onboarding = false
+
+[ui]
+agent_panel_sort = "spaces"
+
+[keys]
+prefix = "ctrl+f"
+
+# 横分割を - に、縦分割を ¥ に割り当て（日本語キーボード対応）
+split_horizontal = "prefix+-"
+split_vertical = "prefix+¥"
