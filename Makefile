@@ -12,6 +12,8 @@ TMUX_CONF := $(HOME)/.tmux.conf
 # ディレクトリ全体をコピー（init.vim, init.lua, lua/, after/, plugin/ 等すべて含む）
 NVIM_DIR  := $(HOME)/.config/nvim
 ZSHRC     := $(HOME)/.zshrc
+HERDR_DIR  := $(HOME)/.config/herdr
+HERDR_CONF := $(HERDR_DIR)/config.toml
 CZRC            := $(HOME)/.czrc
 COMMITLINT_CONF := $(HOME)/commitlint.config.js
 
@@ -52,6 +54,14 @@ backup:
 		echo "[OK]   zsh   <- $(ZSHRC)"; \
 	else \
 		echo "[SKIP] zsh   -- $(ZSHRC) not found"; \
+	fi
+	@# herdr
+	@if [ -f "$(HERDR_CONF)" ]; then \
+		mkdir -p $(BACKUP_DIR)/herdr && \
+		cp $(HERDR_CONF) $(BACKUP_DIR)/herdr/config.toml && \
+		echo "[OK]   herdr <- $(HERDR_CONF)"; \
+	else \
+		echo "[SKIP] herdr -- $(HERDR_CONF) not found"; \
 	fi
 	@# cz-git
 	@if [ -f "$(CZRC)" ]; then \
@@ -109,6 +119,14 @@ apply:
 	else \
 		echo "[SKIP] zsh   -- not in backup"; \
 	fi
+	@# herdr
+	@if [ -f "backup/$(BACKUP)/herdr/config.toml" ]; then \
+		mkdir -p "$(HERDR_DIR)" && \
+		cp backup/$(BACKUP)/herdr/config.toml $(HERDR_CONF) && \
+		echo "[OK]   herdr -> $(HERDR_CONF)"; \
+	else \
+		echo "[SKIP] herdr -- not in backup"; \
+	fi
 	@# cz-git
 	@if [ -f "backup/$(BACKUP)/cz-git/.czrc" ]; then \
 		cp "backup/$(BACKUP)/cz-git/.czrc" "$(CZRC)" && \
@@ -130,7 +148,7 @@ seed-apply:
 	@echo "=== vimable seed-apply ==="
 	@# 既存設定のバックアップ
 	@PRESEED="backup/pre-seed_$(TIMESTAMP)"; \
-	if [ -f "$(TMUX_CONF)" ] || [ -d "$(NVIM_DIR)" ]; then \
+	if [ -f "$(TMUX_CONF)" ] || [ -d "$(NVIM_DIR)" ] || [ -f "$(HERDR_CONF)" ]; then \
 		echo "Pre-seed backup: $$PRESEED"; \
 		if [ -f "$(TMUX_CONF)" ]; then \
 			mkdir -p "$$PRESEED/tmux" && \
@@ -142,12 +160,25 @@ seed-apply:
 			rsync -a --exclude='.git' "$(NVIM_DIR)/" "$$PRESEED/nvim/" && \
 			echo "[BACKUP] nvim"; \
 		fi; \
+		if [ -f "$(HERDR_CONF)" ]; then \
+			mkdir -p "$$PRESEED/herdr" && \
+			cp "$(HERDR_CONF)" "$$PRESEED/herdr/config.toml" && \
+			echo "[BACKUP] herdr"; \
+		fi; \
 		echo ""; \
 	fi
 	@# tmux: 上書き
 	@if [ -f seed/tmux/.tmux.conf ]; then \
 		cp seed/tmux/.tmux.conf "$(TMUX_CONF)" && \
 		echo "[OK]   tmux  -> $(TMUX_CONF)"; \
+	fi
+	@# herdr: 上書き（サーバ稼働中なら設定をリロード）
+	@if [ -f seed/herdr/config.toml ]; then \
+		mkdir -p "$(HERDR_DIR)" && \
+		cp seed/herdr/config.toml "$(HERDR_CONF)" && \
+		echo "[OK]   herdr -> $(HERDR_CONF)"; \
+	else \
+		echo "[SKIP] herdr -- seed/herdr/config.toml not found"; \
 	fi
 	@# nvim: 上書き
 	@if [ -f seed/nvim/init.vim ] || [ -f seed/nvim/coc-settings.json ]; then \
