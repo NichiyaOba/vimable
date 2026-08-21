@@ -12,6 +12,7 @@ TMUX_CONF := $(HOME)/.tmux.conf
 # ディレクトリ全体をコピー（init.vim, init.lua, lua/, after/, plugin/ 等すべて含む）
 NVIM_DIR  := $(HOME)/.config/nvim
 ZSHRC     := $(HOME)/.zshrc
+TIGRC     := $(HOME)/.tigrc
 CZRC            := $(HOME)/.czrc
 COMMITLINT_CONF := $(HOME)/commitlint.config.js
 
@@ -52,6 +53,14 @@ backup:
 		echo "[OK]   zsh   <- $(ZSHRC)"; \
 	else \
 		echo "[SKIP] zsh   -- $(ZSHRC) not found"; \
+	fi
+	@# tig
+	@if [ -f "$(TIGRC)" ]; then \
+		mkdir -p $(BACKUP_DIR)/tig && \
+		cp $(TIGRC) $(BACKUP_DIR)/tig/.tigrc && \
+		echo "[OK]   tig   <- $(TIGRC)"; \
+	else \
+		echo "[SKIP] tig   -- $(TIGRC) not found"; \
 	fi
 	@# cz-git
 	@if [ -f "$(CZRC)" ]; then \
@@ -109,6 +118,13 @@ apply:
 	else \
 		echo "[SKIP] zsh   -- not in backup"; \
 	fi
+	@# tig
+	@if [ -f "backup/$(BACKUP)/tig/.tigrc" ]; then \
+		cp backup/$(BACKUP)/tig/.tigrc $(TIGRC) && \
+		echo "[OK]   tig   -> $(TIGRC)"; \
+	else \
+		echo "[SKIP] tig   -- not in backup"; \
+	fi
 	@# cz-git
 	@if [ -f "backup/$(BACKUP)/cz-git/.czrc" ]; then \
 		cp "backup/$(BACKUP)/cz-git/.czrc" "$(CZRC)" && \
@@ -130,7 +146,7 @@ seed-apply:
 	@echo "=== vimable seed-apply ==="
 	@# 既存設定のバックアップ
 	@PRESEED="backup/pre-seed_$(TIMESTAMP)"; \
-	if [ -f "$(TMUX_CONF)" ] || [ -d "$(NVIM_DIR)" ]; then \
+	if [ -f "$(TMUX_CONF)" ] || [ -d "$(NVIM_DIR)" ] || [ -f "$(TIGRC)" ]; then \
 		echo "Pre-seed backup: $$PRESEED"; \
 		if [ -f "$(TMUX_CONF)" ]; then \
 			mkdir -p "$$PRESEED/tmux" && \
@@ -142,12 +158,22 @@ seed-apply:
 			rsync -a --exclude='.git' "$(NVIM_DIR)/" "$$PRESEED/nvim/" && \
 			echo "[BACKUP] nvim"; \
 		fi; \
+		if [ -f "$(TIGRC)" ]; then \
+			mkdir -p "$$PRESEED/tig" && \
+			cp "$(TIGRC)" "$$PRESEED/tig/.tigrc" && \
+			echo "[BACKUP] tig"; \
+		fi; \
 		echo ""; \
 	fi
 	@# tmux: 上書き
 	@if [ -f seed/tmux/.tmux.conf ]; then \
 		cp seed/tmux/.tmux.conf "$(TMUX_CONF)" && \
 		echo "[OK]   tmux  -> $(TMUX_CONF)"; \
+	fi
+	@# tig: 上書き
+	@if [ -f seed/tig/.tigrc ]; then \
+		cp seed/tig/.tigrc "$(TIGRC)" && \
+		echo "[OK]   tig   -> $(TIGRC)"; \
 	fi
 	@# nvim: 上書き
 	@if [ -f seed/nvim/init.vim ] || [ -f seed/nvim/coc-settings.json ]; then \
