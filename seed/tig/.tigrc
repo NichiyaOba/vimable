@@ -1,3 +1,10 @@
 # カーソル下のファイルパスをクリップボードにコピー (macOS)
 bind status C !echo -n %(file) | pbcopy
 bind diff   C !echo -n %(file) | pbcopy
+
+set vertical-split = yes
+set split-view-width = 50%
+
+bind generic W :toggle vertical-split
+bind generic > :toggle split-view-width +10%
+bind generic < :toggle split-view-width -10%
