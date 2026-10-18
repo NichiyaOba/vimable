@@ -151,6 +151,14 @@ apply:
 	else \
 		echo "[SKIP] herdr -- not in backup"; \
 	fi
+	@# lazygit
+	@if [ -f "backup/$(BACKUP)/lazygit/config.yml" ]; then \
+		mkdir -p "$(LAZYGIT_DIR)" && \
+		cp "backup/$(BACKUP)/lazygit/config.yml" "$(LAZYGIT_CONF)" && \
+		echo "[OK]   lazygit -> $(LAZYGIT_CONF)"; \
+	else \
+		echo "[SKIP] lazygit -- not in backup"; \
+	fi
 	@# cz-git
 	@if [ -f "backup/$(BACKUP)/cz-git/.czrc" ]; then \
 		cp "backup/$(BACKUP)/cz-git/.czrc" "$(CZRC)" && \
