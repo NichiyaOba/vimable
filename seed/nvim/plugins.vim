@@ -36,4 +36,6 @@ Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-rails'
 Plug 'hashivim/vim-terraform'
 Plug 'NichiyaOba/rubvim'
+" Markdown プレビュー（ローカル確認用。GitHub 公開後は 'NichiyaOba/vimd' に置き換える）
+Plug '~/myapp/private/vimd'
 call plug#end()
