@@ -14,6 +14,13 @@ NVIM_DIR  := $(HOME)/.config/nvim
 ZSHRC     := $(HOME)/.zshrc
 HERDR_DIR  := $(HOME)/.config/herdr
 HERDR_CONF := $(HERDR_DIR)/config.toml
+# lazygit は macOS では Application Support 配下を読む（パスに空白を含むため常に引用符で囲む）
+ifeq ($(UNAME),Darwin)
+  LAZYGIT_DIR := $(HOME)/Library/Application Support/lazygit
+else
+  LAZYGIT_DIR := $(HOME)/.config/lazygit
+endif
+LAZYGIT_CONF := $(LAZYGIT_DIR)/config.yml
 CZRC            := $(HOME)/.czrc
 COMMITLINT_CONF := $(HOME)/commitlint.config.js
 
@@ -62,6 +69,14 @@ backup:
 		echo "[OK]   herdr <- $(HERDR_CONF)"; \
 	else \
 		echo "[SKIP] herdr -- $(HERDR_CONF) not found"; \
+	fi
+	@# lazygit
+	@if [ -f "$(LAZYGIT_CONF)" ]; then \
+		mkdir -p "$(BACKUP_DIR)/lazygit" && \
+		cp "$(LAZYGIT_CONF)" "$(BACKUP_DIR)/lazygit/config.yml" && \
+		echo "[OK]   lazygit <- $(LAZYGIT_CONF)"; \
+	else \
+		echo "[SKIP] lazygit -- $(LAZYGIT_CONF) not found"; \
 	fi
 	@# cz-git
 	@if [ -f "$(CZRC)" ]; then \
@@ -136,6 +151,14 @@ apply:
 	else \
 		echo "[SKIP] herdr -- not in backup"; \
 	fi
+	@# lazygit
+	@if [ -f "backup/$(BACKUP)/lazygit/config.yml" ]; then \
+		mkdir -p "$(LAZYGIT_DIR)" && \
+		cp "backup/$(BACKUP)/lazygit/config.yml" "$(LAZYGIT_CONF)" && \
+		echo "[OK]   lazygit -> $(LAZYGIT_CONF)"; \
+	else \
+		echo "[SKIP] lazygit -- not in backup"; \
+	fi
 	@# cz-git
 	@if [ -f "backup/$(BACKUP)/cz-git/.czrc" ]; then \
 		cp "backup/$(BACKUP)/cz-git/.czrc" "$(CZRC)" && \
@@ -157,7 +180,7 @@ seed-apply:
 	@echo "=== vimable seed-apply ==="
 	@# 既存設定のバックアップ
 	@PRESEED="backup/pre-seed_$(TIMESTAMP)"; \
-	if [ -f "$(TMUX_CONF)" ] || [ -d "$(NVIM_DIR)" ] || [ -f "$(HERDR_CONF)" ]; then \
+	if [ -f "$(TMUX_CONF)" ] || [ -d "$(NVIM_DIR)" ] || [ -f "$(HERDR_CONF)" ] || [ -f "$(LAZYGIT_CONF)" ]; then \
 		echo "Pre-seed backup: $$PRESEED"; \
 		if [ -f "$(TMUX_CONF)" ]; then \
 			mkdir -p "$$PRESEED/tmux" && \
@@ -173,6 +196,11 @@ seed-apply:
 			mkdir -p "$$PRESEED/herdr" && \
 			cp "$(HERDR_CONF)" "$$PRESEED/herdr/config.toml" && \
 			echo "[BACKUP] herdr"; \
+		fi; \
+		if [ -f "$(LAZYGIT_CONF)" ]; then \
+			mkdir -p "$$PRESEED/lazygit" && \
+			cp "$(LAZYGIT_CONF)" "$$PRESEED/lazygit/config.yml" && \
+			echo "[BACKUP] lazygit"; \
 		fi; \
 		echo ""; \
 	fi
@@ -197,6 +225,14 @@ seed-apply:
 		fi; \
 	else \
 		echo "[SKIP] herdr -- seed/herdr/config.toml not found"; \
+	fi
+	@# lazygit: 上書き
+	@if [ -f seed/lazygit/config.yml ]; then \
+		mkdir -p "$(LAZYGIT_DIR)" && \
+		cp seed/lazygit/config.yml "$(LAZYGIT_CONF)" && \
+		echo "[OK]   lazygit -> $(LAZYGIT_CONF)"; \
+	else \
+		echo "[SKIP] lazygit -- seed/lazygit/config.yml not found"; \
 	fi
 	@# nvim: 上書き
 	@if [ -f seed/nvim/init.vim ] || [ -f seed/nvim/coc-settings.json ]; then \

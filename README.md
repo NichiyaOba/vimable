@@ -1,6 +1,6 @@
 # vimable
 
-dotfiles (nvim, tmux, zsh, herdr) のバックアップ・復元・自動セットアップツール。
+dotfiles (nvim, tmux, zsh, herdr, lazygit) のバックアップ・復元・自動セットアップツール。
 すべての操作は Make コマンドで実行する。
 
 ## 前提条件
@@ -19,7 +19,7 @@ dotfiles (nvim, tmux, zsh, herdr) のバックアップ・復元・自動セッ�
 
 | コマンド | 説明 |
 | --- | --- |
-| `make backup` | 現在の nvim/tmux/zsh/herdr 設定をタイムスタンプ付きでバックアップ |
+| `make backup` | 現在の nvim/tmux/zsh/herdr/lazygit 設定をタイムスタンプ付きでバックアップ |
 | `make list` | バックアップ一覧を表示 |
 | `make apply` | 最新のバックアップを復元（`BACKUP=<名前>` で指定可） |
 | `make seed-apply` | seed/ のデフォルト設定を配置 |
@@ -86,6 +86,7 @@ seed/
   nvim/coc-settings.json # CoC LSP 設定
   tmux/.tmux.conf        # tmux 設定
   herdr/config.toml      # herdr 設定（prefix・workspace キーバインド）
+  lazygit/config.yml     # lazygit 設定（cz-git コミット・delta の diff 表示）
   zsh/.zshrc             # zsh 設定（マーカー付き追記）
   plug/cz-git/           # cz-git 拡張テンプレート
   plug/claude-map/       # claude-map 拡張テンプレート
@@ -108,5 +109,6 @@ backup/                  # タイムスタンプ付きバックアップ（gitig
 | git | バージョン管理（プラグインマネージャが使用） |
 | fzf | ファジーファインダー（fzf.vim プラグインが使用） |
 | ripgrep | 高速 grep（fzf.vim のバックエンド） |
-| lazygit | Git TUI クライアント（lazygit.nvim から呼び出し） |
+| lazygit | Git TUI クライアント（lazygit.nvim から呼び出し）。`seed/lazygit/config.yml` で設定 |
+| git-delta | diff を色付き・行番号付きで表示（lazygit の diff 表示に使用） |
 | herdr | AI エージェント向けターミナル workspace マネージャ。`seed/herdr/config.toml` で設定 |
