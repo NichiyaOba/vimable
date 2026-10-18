@@ -1,0 +1,8 @@
+customCommands:
+  - key: 'c'
+    context: 'files'
+    command: '/Users/oba_nichiya/.nvm/versions/node/v22.21.1/bin/cz'
+    description: 'Commit with cz-git'
+    output: terminal
+gui:
+  splitDiff: 'horizontal'
