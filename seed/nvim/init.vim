@@ -39,3 +39,9 @@ endif
 if isdirectory(s:plugged . '/coc.nvim')
   source ~/.config/nvim/conf/coc.vim
 endif
+
+" vimd はローカルパス指定のため plugged 外も確認する
+" （GitHub 公開後に plugins.vim を 'NichiyaOba/vimd' へ戻したら ~/myapp/private/vimd の条件は削除する）
+if isdirectory(s:plugged . '/vimd') || isdirectory(expand('~/myapp/private/vimd'))
+  source ~/.config/nvim/conf/vimd.vim
+endif
