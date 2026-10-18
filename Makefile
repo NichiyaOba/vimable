@@ -70,6 +70,14 @@ backup:
 	else \
 		echo "[SKIP] herdr -- $(HERDR_CONF) not found"; \
 	fi
+	@# lazygit
+	@if [ -f "$(LAZYGIT_CONF)" ]; then \
+		mkdir -p "$(BACKUP_DIR)/lazygit" && \
+		cp "$(LAZYGIT_CONF)" "$(BACKUP_DIR)/lazygit/config.yml" && \
+		echo "[OK]   lazygit <- $(LAZYGIT_CONF)"; \
+	else \
+		echo "[SKIP] lazygit -- $(LAZYGIT_CONF) not found"; \
+	fi
 	@# cz-git
 	@if [ -f "$(CZRC)" ]; then \
 		mkdir -p $(BACKUP_DIR)/cz-git; \
