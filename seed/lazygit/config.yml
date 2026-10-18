@@ -6,3 +6,9 @@ customCommands:
     output: terminal
 gui:
   splitDiff: 'horizontal'
+git:
+  diffRenderers:
+    # ~/.gitconfig の side-by-side は lazygit の狭い diff 欄では折り返しだらけになるため、
+    # git 設定を読まずに 1 列表示にする（ターミナルの git diff は左右分割のまま）
+    - colorArg: always
+      command: delta --no-gitconfig --dark --paging=never --line-numbers --syntax-theme Dracula
