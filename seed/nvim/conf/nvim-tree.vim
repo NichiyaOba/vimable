@@ -26,6 +26,8 @@ require("nvim-tree").setup({
   view = {
     width = 30,
     side = "left",
+    -- 左側に行番号を出す（:数字 でその行へ飛ぶため）
+    number = true,
   },
 
   git = {

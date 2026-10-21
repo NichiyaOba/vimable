@@ -48,3 +48,19 @@ nnoremap <leader>y :CopyRelativePath<CR>
 " Visual モードで行を上下に移動
 xnoremap J :m '>+1<CR>gv=gv
 xnoremap K :m '<-2<CR>gv=gv
+
+" 今のウィンドウを全面に広げる / 元のレイアウトに戻す
+" （ポップアップではなく窓自体を広げるので、vimd のプレビューも広い幅で描き直される）
+function! s:toggle_zoom() abort
+  if exists('t:zoom_restore')
+    execute t:zoom_restore
+    unlet t:zoom_restore
+  else
+    " 戻すときの各ウィンドウの大きさ。タブごとに別々にズームできるよう t: に持つ
+    let t:zoom_restore = winrestcmd()
+    " 幅（|）と高さ（_）の両方を最大にする
+    wincmd |
+    wincmd _
+  endif
+endfunction
+nnoremap <silent> <leader>z :<C-u>call <SID>toggle_zoom()<CR>
